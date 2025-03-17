@@ -17,6 +17,7 @@
     "ethers": "^6.13.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-toastify": "^11.0.5",
     "tailwindcss": "^4.0.14",
     "viem": "2.x",
     "wagmi": "^2.14.13"
