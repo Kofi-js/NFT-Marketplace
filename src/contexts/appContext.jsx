@@ -234,7 +234,12 @@ export const AppProvider = ({ children }) => {
 
       const results = await multicall.aggregate.staticCall(calls);
 
-      const encodedResults = JSON.parse(JSON.stringify(results))[1];
+    //   const encodedResults = JSON.parse(JSON.stringify(results))[1];
+    // const encodedResults = results[1];
+    
+const encodedResults = JSON.parse(JSON.stringify(results, (key, value) => 
+    typeof value === 'bigint' ? value.toString() : value
+  ))[1];
 
       const decodedResult = encodedResults.map(
         (result) =>

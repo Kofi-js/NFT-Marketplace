@@ -167,7 +167,7 @@ const OwnedTokens = () => {
 
                   <div className="flex gap-2 pb-2">
                     <Icon icon="ri:eth-line" className="w-6 h-6" />
-                    <span>{`${formatEther(mintPrice)} ETH`}</span>
+                    <span>{`${formatEther(mintPrice[0])} ETH`}</span>
                   </div>
 
                   {/* Transfer section */}
