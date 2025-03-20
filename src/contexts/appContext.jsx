@@ -92,64 +92,6 @@ export const AppProvider = ({ children }) => {
     fetchContractData();
   }, []);
 
-  // useEffect(() => {
-
-  // // Initial state setup
-  // const setupInitialState = async () => {
-  //     await fetchContractState(contract);
-  //     if (address) {
-  //         await fetchOwnedTokens(contract, address);
-  //     }
-  // };
-
-  // setupInitialState();
-
-  // Event listeners
-  //     const handleTransfer = async (from, to) => {
-  //         await fetchContractState(contract);
-
-  //         // If current user is involved in the transfer, update their owned tokens
-  //         if (address) {
-  //             const userAddress = address.toLowerCase();
-  //             const fromAddress = from.toLowerCase();
-  //             const toAddress = to.toLowerCase();
-
-  //             if (fromAddress === userAddress || toAddress === userAddress) {
-  //                 await fetchOwnedTokens(contract, address);
-  //             }
-  //         }
-  //     };
-
-  //     const handleMinted = async (to, tokenId) => {
-  //         console.log(`Minted event: to=${to}, tokenId=${tokenId}`);
-  //         // Update the nextTokenId state directly based on the event
-  //         setNextTokenId(Number(tokenId) + 1);
-  //         // Also refresh contract state
-  //         await fetchContractState(contract);
-
-  //         // If minted to current user, update their owned tokens
-  //         if (address && to.toLowerCase() === address.toLowerCase()) {
-  //             console.log("NFT minted to current user, refreshing owned tokens...");
-  //             await fetchOwnedTokens(contract, address);
-  //         }
-  //     };
-
-  //     // Cleanup event listeners
-  //     return () => {
-  //         contract.off("Transfer", handleTransfer);
-  //         contract.off("Minted", handleMinted);
-  //     };
-  // }, [address]);
-
-  // // Watch for address changes
-  // useEffect(() => {
-  //     if (address) {
-  //         const contract = getContract();
-  //         fetchOwnedTokens(contract, address);
-  //     } else {
-  //         setOwnedTokens([]);
-  //     }
-  // }, [address]);
 
   useEffect(() => {
     if (!maxSupply || !baseTokenURI) return;
@@ -234,16 +176,14 @@ export const AppProvider = ({ children }) => {
 
       const results = await multicall.aggregate.staticCall(calls);
 
-    //   const encodedResults = JSON.parse(JSON.stringify(results))[1];
-    // const encodedResults = results[1];
-    
-const encodedResults = JSON.parse(JSON.stringify(results, (key, value) => 
-    typeof value === 'bigint' ? value.toString() : value
-  ))[1];
+      const encodedResults = JSON.parse(
+        JSON.stringify(results, (key, value) =>
+          typeof value === "bigint" ? value.toString() : value
+        )
+      )[1];
 
       const decodedResult = encodedResults.map(
-        (result) =>
-          contractInterface.decodeFunctionResult("ownerOf", result)[0]
+        (result) => contractInterface.decodeFunctionResult("ownerOf", result)[0]
       );
 
       const isOwnedArray = decodedResult
@@ -258,28 +198,33 @@ const encodedResults = JSON.parse(JSON.stringify(results, (key, value) =>
     }
   };
 
-
   const handleTransfer = async (tokenId, to) => {
     try {
-        const signer = await getEthersSigner(wagmiConfig);
-        if(!signer) throw new Error("Wallet not connected");
+      const signer = await getEthersSigner(wagmiConfig);
+      if (!signer) throw new Error("Wallet not connected");
 
-        const contract = new Contract(
-            import.meta.env.env.VITE_NFT_CONTRACT_ADDRESS,
-            NFT_ABI,
-            signer
-        );
+      const contract = new Contract(
+        import.meta.env.VITE_NFT_CONTRACT_ADDRESS,
+        NFT_ABI,
+        signer
+      );
 
-        const tx = await contract.transferFrom(await signer.getAddress(), to, tokenId)
-        await tx.wait()
+      const tx = await contract.transferFrom(
+        await signer.getAddress(),
+        to,
+        tokenId
+      );
+      await tx.wait();
 
-        console.log(`Token ${tokenId} transferred to ${to}`);
-        setOwnedTokens((prevOwnedTokens) => prevOwnedTokens.filter((id) => id !== tokenId));
+      console.log(`Token ${tokenId} transferred to ${to}`);
+      setOwnedTokens((prevOwnedTokens) =>
+        prevOwnedTokens.filter((id) => id !== tokenId)
+      );
     } catch (error) {
-        console.error("Error transferring token:", error);
+      console.error("Error transferring token:", error);
     }
     handleTransfer(tokenId);
-  }
+  };
 
   return (
     <appContext.Provider

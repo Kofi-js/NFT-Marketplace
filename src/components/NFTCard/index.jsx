@@ -12,18 +12,13 @@ const NFTCard = ({ metadata, mintPrice, tokenId, nextTokenId, mintNFT }) => {
   const isNextToMint = Number(tokenId) === Number(nextTokenId);
   const isOwned = ownedTokens.some((id) => Number(id) === Number(tokenId));
 
-  const handleMint = async () => {
-    if (!isNextToMint) return;
-
+  const handleMintNft = async () => {
     setIsMinting(true);
-    try {
-      await mintNFT();
-    } catch (error) {
-      console.error("Mint error:", error);
-    } finally {
-      setIsMinting(false);
-    }
+    await mintNFT(tokenId);
+    setIsMinting(false);
   };
+  
+
 
   return (
     <div className="hover-card card-shine bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 relative">
@@ -73,7 +68,7 @@ const NFTCard = ({ metadata, mintPrice, tokenId, nextTokenId, mintNFT }) => {
 
         <button
           disabled={!isNextToMint || isOwned || isMinting}
-          onClick={handleMint}
+          onClick={handleMintNft}
           className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${
             isNextToMint && !isOwned && !isMinting
               ? "bg-gradient-primary hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98]"
