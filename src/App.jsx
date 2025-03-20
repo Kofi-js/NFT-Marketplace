@@ -246,7 +246,7 @@ function App() {
                       <NFTCard
                         key={tokenId}
                         metadata={metadata}
-                        mintPrice={mintPrice}
+                        mintPrice={mintPrice.toString()}
                         tokenId={tokenId}
                         nextTokenId={nextTokenId}
                         mintNFT={mintToken}
